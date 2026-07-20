@@ -1,0 +1,51 @@
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# virtualenv
+.venv/
+venv/
+
+# testing / caches
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+
+# W&B / experiment tracking
+wandb/
+mlruns/
+
+# data & artifacts (opt-in via git-lfs)
+data/
+models/
+outputs/
+checkpoints/
+*.pt
+*.pth
+*.onnx
+*.safetensors
+
+# LaTeX build
+*.aux
+*.log
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.bcf
+*.run.xml
+*.out
+*.toc
+
+# editor / os
+.vscode/
+.idea/
+*.swp
+.DS_Store

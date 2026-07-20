@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "autograd-numpy"
+version = "0.0.1"
+description = "TODO: one-line description"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+authors = [{ name = "PurpleAFK", email = "purpleafk@gmail.com" }]
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "hypothesis>=6.100",
+  "ruff>=0.6",
+  "mypy>=1.11",
+]
+
+[project.urls]
+Repository = "https://github.com/PurpleAFK/autograd-numpy"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/autograd_numpy"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E", "F", "W",  # pycodestyle + pyflakes
+  "I",            # isort
+  "UP",           # pyupgrade
+  "B",            # bugbear
+  "SIM",          # simplify
+  "N",            # pep8-naming
+  "RUF",          # ruff-specific
+  "NPY",          # numpy-specific
+]
+ignore = [
+  "E501",  # long lines: let formatter handle
+  "N803",  # allow X, Y, W in signatures (ML convention)
+  "N806",  # allow uppercase locals (X_train, W_hh)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src", "tests"]
