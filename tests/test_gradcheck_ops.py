@@ -86,3 +86,28 @@ def test_relu_values() -> None:
     out.backward()
     assert out.data == 3.0
     assert (a.grad, b.grad) == (0.0, 1.0)
+
+
+@given(floats, floats)
+def test_sub(x: float, y: float) -> None:
+    check_binary(lambda a, b: a - b, x, y)
+
+
+nonzero = floats.filter(lambda v: abs(v) > 0.1)
+positive = st.floats(min_value=0.1, max_value=5)
+
+
+@given(floats, nonzero)
+def test_div(x: float, y: float) -> None:
+    check_binary(lambda a, b: a / b, x, y)
+
+
+@given(positive, st.sampled_from([-2.0, -1.0, 0.5, 2.0, 3.0]))
+def test_pow(x: float, k: float) -> None:
+    check_unary(lambda a: a**k, x)
+
+
+@given(nonzero)
+def test_reflected_ops(x: float) -> None:
+    # Plain number on the left: 2 + a, 3 * a, 1 - a, 1 / a.
+    check_unary(lambda a: 2 + 3 * a - (1 - a) + 1 / a, x)

@@ -71,6 +71,39 @@ class Value:
         out._backward = _backward
         return out
 
+    def __pow__(self, k: float) -> Value:
+        # Only constant exponents: x**k. (Value**Value would need d/dk = x**k * ln x.)
+        out = Value(self.data**k, (self,), f"**{k}")
+
+        def _backward() -> None:
+            self.grad += k * self.data ** (k - 1) * out.grad
+
+        out._backward = _backward
+        return out
+
+    # Everything below is built from the primitives above, so it needs no _backward of its own.
+    def __neg__(self) -> Value:
+        return self * -1
+
+    def __sub__(self, other: Value | float) -> Value:
+        return self + (-other)
+
+    def __truediv__(self, other: Value | float) -> Value:
+        return self * other**-1
+
+    # Reflected versions run when the left operand is a plain number: 2 + v calls v.__radd__(2).
+    def __radd__(self, other: float) -> Value:
+        return self + other
+
+    def __rmul__(self, other: float) -> Value:
+        return self * other
+
+    def __rsub__(self, other: float) -> Value:
+        return Value(other) - self
+
+    def __rtruediv__(self, other: float) -> Value:
+        return Value(other) / self
+
     def backward(self) -> None:
         """Fill in .grad for every node that self depends on."""
         topo: list[Value] = []
