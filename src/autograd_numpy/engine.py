@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable
 
 
@@ -45,6 +46,17 @@ class Value:
             # d(a*b)/da = b and d(a*b)/db = a: each input's grad is scaled by the *other* input.
             self.grad += other.data * out.grad
             other.grad += self.data * out.grad
+
+        out._backward = _backward
+        return out
+
+    def tanh(self) -> Value:
+        t = math.tanh(self.data)
+        out = Value(t, (self,), "tanh")
+
+        def _backward() -> None:
+            # d tanh(x)/dx = 1 - tanh(x)^2, and tanh(x) is already stored as t.
+            self.grad += (1 - t**2) * out.grad
 
         out._backward = _backward
         return out

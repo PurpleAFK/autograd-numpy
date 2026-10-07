@@ -57,3 +57,14 @@ def test_mul_add_expression(x: float, y: float, z: float) -> None:
         return d * d
 
     check_binary(f, x, y)
+
+
+@given(floats)
+def test_tanh(x: float) -> None:
+    check_unary(lambda a: a.tanh(), x)
+
+
+@given(floats, floats, floats)
+def test_tanh_of_expression(x: float, y: float, z: float) -> None:
+    # The chain-rule example: tanh(a*b + c).
+    check_binary(lambda a, b: (a * b + Value(z)).tanh(), x, y)
