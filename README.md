@@ -83,7 +83,7 @@ Neural net:
 - [x] `Neuron`, `Layer`, `MLP` with `parameters()` and `zero_grad()`
 - [x] Train on `make_moons` (SGD loop: forward, zero grads, backward, update)
 - [x] Loss curve and decision boundary plots, saved in the repo
-- [ ] Pushed, CI green
+- [x] Pushed, CI green
 
 Wrap-up:
 - [x] Real description here and in `pyproject.toml` (replacing the TODO)
