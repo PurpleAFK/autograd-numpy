@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "autograd-numpy"
 version = "0.0.1"
-description = "TODO: one-line description"
+description = "Tiny scalar reverse-mode autograd engine with finite-difference-checked gradients and a small MLP"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 authors = [{ name = "PurpleAFK", email = "purpleafk@gmail.com" }]
