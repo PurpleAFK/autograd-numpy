@@ -61,6 +61,16 @@ class Value:
         out._backward = _backward
         return out
 
+    def relu(self) -> Value:
+        out = Value(max(0.0, self.data), (self,), "relu")
+
+        def _backward() -> None:
+            # Slope 1 where the input was positive, 0 otherwise (we pick 0 at exactly x = 0).
+            self.grad += (out.data > 0) * out.grad
+
+        out._backward = _backward
+        return out
+
     def backward(self) -> None:
         """Fill in .grad for every node that self depends on."""
         topo: list[Value] = []

@@ -68,3 +68,21 @@ def test_tanh(x: float) -> None:
 def test_tanh_of_expression(x: float, y: float, z: float) -> None:
     # The chain-rule example: tanh(a*b + c).
     check_binary(lambda a, b: (a * b + Value(z)).tanh(), x, y)
+
+
+# ReLU has a kink at 0 where the derivative is undefined; finite differences straddling 0
+# would average the two slopes and give 0.5. Keep inputs away from it.
+away_from_zero = floats.filter(lambda v: abs(v) > 1e-3)
+
+
+@given(away_from_zero)
+def test_relu(x: float) -> None:
+    check_unary(lambda a: a.relu(), x)
+
+
+def test_relu_values() -> None:
+    a, b = Value(-2.0), Value(3.0)
+    out = a.relu() + b.relu()
+    out.backward()
+    assert out.data == 3.0
+    assert (a.grad, b.grad) == (0.0, 1.0)
