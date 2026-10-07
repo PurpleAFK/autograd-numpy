@@ -37,6 +37,18 @@ class Value:
         out._backward = _backward
         return out
 
+    def __mul__(self, other: Value | float) -> Value:
+        other = other if isinstance(other, Value) else Value(other)
+        out = Value(self.data * other.data, (self, other), "*")
+
+        def _backward() -> None:
+            # d(a*b)/da = b and d(a*b)/db = a: each input's grad is scaled by the *other* input.
+            self.grad += other.data * out.grad
+            other.grad += self.data * out.grad
+
+        out._backward = _backward
+        return out
+
     def backward(self) -> None:
         """Fill in .grad for every node that self depends on."""
         topo: list[Value] = []

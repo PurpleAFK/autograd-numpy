@@ -42,3 +42,18 @@ def test_same_node_used_twice_accumulates() -> None:
     b = a + a
     b.backward()
     assert a.grad == 2.0
+
+
+@given(floats, floats)
+def test_mul(x: float, y: float) -> None:
+    check_binary(lambda a, b: a * b, x, y)
+
+
+@given(floats, floats, floats)
+def test_mul_add_expression(x: float, y: float, z: float) -> None:
+    # Gradients through a small graph: d = a*b + c, then (d*d) reuses d.
+    def f(a: Value, b: Value) -> Value:
+        d = a * b + Value(z)
+        return d * d
+
+    check_binary(f, x, y)
