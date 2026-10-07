@@ -21,6 +21,12 @@ dev = [
   "mypy>=1.11",
 ]
 
+examples = [
+  "numpy>=1.26",
+  "scikit-learn>=1.4",
+  "matplotlib>=3.8",
+]
+
 [project.urls]
 Repository = "https://github.com/PurpleAFK/autograd-numpy"
 
