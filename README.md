@@ -4,7 +4,8 @@ A tiny scalar reverse-mode autograd engine in pure Python, in the spirit of Karp
 gradient checked against finite differences using hypothesis property tests. A `Value` wraps one float and
 records the operation that produced it; `backward()` walks the graph in reverse topological order and
 applies the chain rule at each node. A small `Neuron` / `Layer` / `MLP` library on top trains a
-2-16-16-1 network on `make_moons` to 100% training accuracy.
+2-16-16-1 network on `make_moons`: 99% accuracy on 100 training points and 100% on 100
+held-out test points (one seed, low-noise data, so treat it as "the engine learns", not a benchmark).
 
 ![loss curve](assets/loss_curve.png) ![decision boundary](assets/decision_boundary.png)
 
@@ -88,7 +89,8 @@ Neural net:
 Wrap-up:
 - [x] Real description here and in `pyproject.toml` (replacing the TODO)
 - [x] README: usage example, results plot, how this differs from PyTorch tensor autograd
-- [ ] Keep-or-cut decision for the resume (cut unless it trains on make_moons)
+- [x] Held-out test split: train accuracy and test accuracy reported separately
+- [x] Keep-or-cut decision for the resume: keep (it trains on make_moons and generalizes to held-out points)
 
 ## License
 
