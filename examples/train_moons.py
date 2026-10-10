@@ -12,6 +12,7 @@ matplotlib.use("Agg")  # write PNGs without needing a display
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.datasets import make_moons
+from sklearn.model_selection import train_test_split
 
 from autograd_numpy import MLP, Value
 
@@ -30,8 +31,11 @@ def loss_and_accuracy(model: MLP, X: np.ndarray, y: np.ndarray, alpha: float = 1
 
 
 def main(steps: int = 100, seed: int = 1337) -> None:
-    X, y = make_moons(n_samples=100, noise=0.1, random_state=seed)
+    X, y = make_moons(n_samples=200, noise=0.1, random_state=seed)
     y = y * 2 - 1  # labels {0, 1} -> {-1, +1} for the margin loss
+    # Hold out half the points: the model never trains on them, so test accuracy measures
+    # generalization instead of memorization. stratify keeps the class balance equal in both halves.
+    X, X_test, y, y_test = train_test_split(X, y, test_size=0.5, random_state=seed, stratify=y)
 
     model = MLP(2, [16, 16, 1], seed=seed)
     print(model, f"\n{len(model.parameters())} parameters")
@@ -48,9 +52,14 @@ def main(steps: int = 100, seed: int = 1337) -> None:
         if k % 10 == 0 or k == steps - 1:
             print(f"step {k:3d}  loss {loss.data:.4f}  accuracy {acc:.0%}")
 
+    _, test_acc = loss_and_accuracy(model, X_test, y_test)
+    print(
+        f"train accuracy {history[-1][1]:.0%}  test accuracy {test_acc:.0%} ({len(y_test)} held-out points)"
+    )
+
     ASSETS.mkdir(exist_ok=True)
     plot_history(history)
-    plot_boundary(model, X, y)
+    plot_boundary(model, X, y, X_test, y_test)
 
 
 def plot_history(history: list[tuple[float, float]]) -> None:
@@ -69,7 +78,9 @@ def plot_history(history: list[tuple[float, float]]) -> None:
     plt.close(fig)
 
 
-def plot_boundary(model: MLP, X: np.ndarray, y: np.ndarray, h: float = 0.1) -> None:
+def plot_boundary(
+    model: MLP, X: np.ndarray, y: np.ndarray, X_test: np.ndarray, y_test: np.ndarray, h: float = 0.1
+) -> None:
     xx, yy = np.meshgrid(
         np.arange(X[:, 0].min() - 1, X[:, 0].max() + 1, h),
         np.arange(X[:, 1].min() - 1, X[:, 1].max() + 1, h),
@@ -78,7 +89,18 @@ def plot_boundary(model: MLP, X: np.ndarray, y: np.ndarray, h: float = 0.1) -> N
     Z = np.array([model(list(map(float, p)))[0].data > 0 for p in grid]).reshape(xx.shape)
     fig, ax = plt.subplots(figsize=(6, 5))
     ax.contourf(xx, yy, Z, cmap=plt.cm.Spectral, alpha=0.8)
-    ax.scatter(X[:, 0], X[:, 1], c=y, s=30, cmap=plt.cm.Spectral, edgecolors="k")
+    ax.scatter(X[:, 0], X[:, 1], c=y, s=30, cmap=plt.cm.Spectral, edgecolors="k", label="train")
+    ax.scatter(
+        X_test[:, 0],
+        X_test[:, 1],
+        c=y_test,
+        s=40,
+        cmap=plt.cm.Spectral,
+        marker="X",
+        edgecolors="k",
+        label="test (held out)",
+    )
+    ax.legend(loc="lower left")
     ax.set_title("Decision boundary")
     fig.tight_layout()
     fig.savefig(ASSETS / "decision_boundary.png", dpi=120)
